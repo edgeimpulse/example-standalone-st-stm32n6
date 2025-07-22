@@ -1,6 +1,10 @@
 # ei
 /edgeimpulse/edge-impulse-sdk
 /edgeimpulse/tflite-model
+/edgeimpulse/model-parameters.c
+/edgeimpulse/Model/network.c
+/edgeimpulse/Model/network_data.hex
+
 
 # build output
 /build
