@@ -1,0 +1,41 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug ST N6",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceRoot}/build/Project.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "runToEntryPoint": "main",
+            "servertype": "stlink",
+            //"showDevDebugOutput": "parsed",
+            "device": "STM32N657",
+            "interface": "swd",
+            "serverArgs": [
+                "-m 1",
+                "-g"
+            ],
+            "preRestartCommands": [
+                "target remote :5000"
+            ],
+            "overrideLaunchCommands": [
+                "load",
+                "break main",
+            ],
+            "v1": false,
+        },
+        {
+            "name": "Attach ST N6",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceRoot}/build/Project.elf",
+            "request": "attach",
+            "type": "cortex-debug",
+            "servertype": "stlink",
+            //"showDevDebugOutput": "parsed",
+            "device": "STM32N657",
+            "interface": "swd",
+            "v1": false,
+        }    
+    ],
+}
