@@ -13,27 +13,9 @@ CC_SOURCES = $(wildcard edgeimpulse/edge-impulse-sdk/tensorflow/lite/kernels/*.c
 	$(wildcard edgeimpulse/edge-impulse-sdk/tensorflow/lite/micro/memory_planner/*.cc) \
 	$(wildcard edgeimpulse/edge-impulse-sdk/tensorflow/lite/core/api/*.cc) \
 
-#C_SOURCES += $(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/DSP/Source/TransformFunctions/*fft*.c) \
-#	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/DSP/Source/CommonTables/*.c) \
-#	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/DSP/Source/MatrixFunctions/*.c) \
-#	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/DSP/Source/TransformFunctions/*bit*.c) \
-#	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/DSP/Source/StatisticsFunctions/*.c) \
-#	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/NN/Source/ActivationFunctions/*.c) \
-#	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/NN/Source/BasicMathFunctions/*.c) \
-#	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/NN/Source/ConcatenationFunctions/*.c) \
-#	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/NN/Source/ConvolutionFunctions/*.c) \
-#	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/NN/Source/FullyConnectedFunctions/*.c) \
-#	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/NN/Source/NNSupportFunctions/*.c) \
-#	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/NN/Source/PoolingFunctions/*.c) \
-#	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/NN/Source/ReshapeFunctions/*.c) \
-#	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/NN/Source/SoftmaxFunctions/*.c) \
-#	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/NN/Source/SVDFunctions/*.c)
-
 CXX_INCLUDES += -Iedgeimpulse/edge-impulse-sdk/classifier
 CXX_INCLUDES += -Iedgeimpulse/edge-impulse-sdk/classifier/inference_engines
 CXX_INCLUDES += -Iedgeimpulse
-#CXX_INCLUDES += -ISTM32Cube_FW_N6/Drivers/CMSIS/Include
-#CXX_INCLUDES += -ISTM32Cube_FW_N6/Drivers/CMSIS/DSP/Include
 CXX_INCLUDES += -IInc
 CXX_INCLUDES += -ILib
 CXX_INCLUDES += -ILib/AI_Runtime/Inc

@@ -23,34 +23,13 @@ C_SOURCES_FW += $(FW_REL_DIR)/Drivers/STM32N6xx_HAL_Driver/Src/stm32n6xx_hal_uar
 C_SOURCES_FW += $(FW_REL_DIR)/Drivers/STM32N6xx_HAL_Driver/Src/stm32n6xx_hal_uart_ex.c
 C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/STM32N6570-DK/stm32n6570_discovery.c
 C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/STM32N6570-DK/stm32n6570_discovery_bus.c
-C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/STM32N6570-DK/stm32n6570_discovery_lcd.c
 C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/STM32N6570-DK/stm32n6570_discovery_xspi.c
 C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/Components/aps256xx/aps256xx.c
 C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/Components/mx66uw1g45g/mx66uw1g45g.c
-#C_SOURCES_FW += $(FW_REL_DIR)/Utilities/lcd/stm32_lcd.c
-#C_SOURCES_FW +=  $(wildcard $(FW_REL_DIR)/Drivers/CMSIS/DSP/Source/TransformFunctions/*.c) \
-#	$(wildcard $(FW_REL_DIR)/Drivers/CMSIS/DSP/Source/TransformFunctions/*fft*.c) \
-#	$(wildcard $(FW_REL_DIR)/Drivers/CMSIS/DSP/Source/CommonTables/*.c) \
-#	$(wildcard $(FW_REL_DIR)/Drivers/CMSIS/DSP/Source/StatisticsFunctions/*.c) \
-#	$(wildcard $(FW_REL_DIR)/Drivers/CMSIS/DSP/Source/TransformFunctions/*bit*.c) \
-#	$(wildcard $(FW_REL_DIR)/Drivers/CMSIS/NN/Source/ActivationFunctions/*.c) \
-#	$(wildcard $(FW_REL_DIR)/Drivers/CMSIS/NN/Source/BasicMathFunctions/*.c) \
-#	$(wildcard $(FW_REL_DIR)/Drivers/CMSIS/NN/Source/ConcatenationFunctions/*.c) \
-#	$(wildcard $(FW_REL_DIR)/Drivers/CMSIS/NN/Source/ConvolutionFunctions/*.c) \
-#	$(wildcard $(FW_REL_DIR)/Drivers/CMSIS/NN/Source/FullyConnectedFunctions/*.c) \
-#	$(wildcard $(FW_REL_DIR)/Drivers/CMSIS/NN/Source/NNSupportFunctions/*.c) \
-#	$(wildcard $(FW_REL_DIR)/Drivers/CMSIS/NN/Source/PoolingFunctions/*.c) \
-#	$(wildcard $(FW_REL_DIR)/Drivers/CMSIS/NN/Source/ReshapeFunctions/*.c) \
-#	$(wildcard $(FW_REL_DIR)/Drivers/CMSIS/NN/Source/SoftmaxFunctions/*.c) \
-#	$(wildcard $(FW_REL_DIR)/Drivers/CMSIS/NN/Source/SVDFunctions/*.c)
 
 C_INCLUDES_FW += -I$(FW_REL_DIR)/Drivers/STM32N6xx_HAL_Driver/Inc
 C_INCLUDES_FW += -I$(FW_REL_DIR)/Drivers/STM32N6xx_HAL_Driver/Inc/Legacy
 C_INCLUDES_FW += -I$(FW_REL_DIR)/Drivers/CMSIS/Device/ST/STM32N6xx/Include
-#C_INCLUDES_FW += -I$(FW_REL_DIR)/Drivers/CMSIS/Include
-#C_INCLUDES_FW += -I$(FW_REL_DIR)/Drivers/CMSIS/DSP/Include
-#C_INCLUDES_FW += -I$(FW_REL_DIR)/Drivers/CMSIS/DSP/PrivateInclude
-#C_INCLUDES_FW += -I$(FW_REL_DIR)/Drivers/CMSIS/NN/Include
 C_INCLUDES_FW += -Iedgeimpulse/edge-impulse-sdk/CMSIS/Core/Include
 C_INCLUDES_FW += -Iedgeimpulse/edge-impulse-sdk/CMSIS/DSP/Include
 C_INCLUDES_FW += -Iedgeimpulse/edge-impulse-sdk/CMSIS
@@ -59,7 +38,7 @@ C_INCLUDES_FW += -Iedgeimpulse
 
 C_INCLUDES_FW += -I$(FW_REL_DIR)/Drivers/BSP/Components/Common
 C_INCLUDES_FW += -I$(FW_REL_DIR)/Drivers/BSP/STM32N6570-DK
-C_INCLUDES_FW += -I$(FW_REL_DIR)/Utilities/lcd
+#C_INCLUDES_FW += -I$(FW_REL_DIR)/Utilities/lcd
 C_INCLUDES_FW += -I$(FW_REL_DIR)/Drivers/BSP/Components/aps256xx
 
 C_SOURCES += $(C_SOURCES_FW)
