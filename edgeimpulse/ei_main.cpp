@@ -33,11 +33,9 @@
 */
 
 /* Include ----------------------------------------------------------------- */
-#include "ei_main.h"
 #include "edge-impulse-sdk/classifier/ei_run_classifier.h"
 #include "edge-impulse-sdk/porting/ei_classifier_porting.h"
 #include "model-parameters/model_variables.h"
-//#include "Objdetect_pp/lib_objdetect_pp/Inc/objdetect_pp_output_if.h"
 
 // to avoid error
 uint8_t *global_camera_buffer;
