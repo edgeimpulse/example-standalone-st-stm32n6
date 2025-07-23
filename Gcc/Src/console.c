@@ -20,7 +20,7 @@
 #include <errno.h>
 #include <unistd.h>
 
-extern UART_HandleTypeDef huart1;
+extern UART_HandleTypeDef UartHandle;
 
 int _write(int file, char *ptr, int len)
 {
@@ -31,7 +31,7 @@ int _write(int file, char *ptr, int len)
       return -1;
   }
 
-  status = HAL_UART_Transmit(&huart1, (uint8_t*)ptr, len, ~0);
+  status = HAL_UART_Transmit(&UartHandle, (uint8_t*)ptr, len, ~0);
 
   return (status == HAL_OK ? len : 0);
 }

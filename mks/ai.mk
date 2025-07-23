@@ -2,7 +2,6 @@ AI_REL_DIR := Lib/AI_Runtime
 PP_REL_DIR := Lib/Objdetect_pp
 
 C_SOURCES_AI += $(AI_REL_DIR)/Npu/ll_aton/ll_aton.c
-#C_SOURCES_AI += $(AI_REL_DIR)/Npu/ll_aton/ll_aton_osal_threadx.c
 C_SOURCES_AI += $(AI_REL_DIR)/Npu/ll_aton/ll_aton_debug.c
 C_SOURCES_AI += $(AI_REL_DIR)/Npu/ll_aton/ll_aton_lib.c
 C_SOURCES_AI += $(AI_REL_DIR)/Npu/ll_aton/ll_aton_lib_sw_operators.c

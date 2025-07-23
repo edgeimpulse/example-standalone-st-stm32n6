@@ -49,8 +49,10 @@ BUILD_DIR = build
 C_SOURCES += Src/main.c
 C_SOURCES += Src/app_fuseprogramming.c
 C_SOURCES += Src/stm32n6xx_it.c
-C_SOURCES += Model/network.c
+C_SOURCES += Src/misc_toolbox.c
+C_SOURCES += Src/system_clock_config.c
 C_SOURCES += Src/sysmem.c
+C_SOURCES += Model/network.c
 
 # ASM sources
 ASM_SOURCES =
@@ -102,7 +104,7 @@ C_DEFS += -DUSE_STM32N6570_DK
 C_DEFS += -DUSE_FULL_ASSERT
 C_DEFS += -DUSE_FULL_LL_DRIVER
 C_DEFS += -DVECT_TAB_SRAM
-
+C_DEFS += -DNUCLEO_N6_CONFIG=0
 C_DEFS += -DUSER_VECT_TAB_ADDRESS
 
 ifeq ($(REV_BOARD),B01)

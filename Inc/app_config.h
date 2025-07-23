@@ -79,4 +79,13 @@
 #define NN_FORMAT DCMIPP_PIXEL_PACKER_FORMAT_RGB888_YUV444_1
 #define NN_BPP 3
 
+#define VDDCORE_OVERDRIVE               1               // Use Overdrive mode (quick clocks) or not (normal clocks)
+
+#define USE_UART_BAUDRATE               115200          /* 921600 115200 */
+#define USE_MCU_DCACHE                  1
+#define USE_MCU_ICACHE                  1
+#define USE_EXTERNAL_MEMORY_DEVICES     1
+
+#define USE_NPU_CACHE           // Used to open RISAFs for the NPU cache
+
 #endif

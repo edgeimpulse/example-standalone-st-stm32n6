@@ -19,27 +19,19 @@
 #include <assert.h>
 
 #include "app_config.h"
+#include "system_clock_config.h"
+#include "mcu_cache.h"
 #include "app_fuseprogramming.h"
 #include "main.h"
 #include "stm32n6570_discovery.h"
-#include "stm32n6570_discovery_bus.h"
-#include "stm32n6570_discovery_xspi.h"
 #include <stdio.h>
-#include "stm32n6xx_hal_rif.h"
+#include "misc_toolbox.h"
+#include "npu_cache.h"
 
-CACHEAXI_HandleTypeDef hcacheaxi;
-UART_HandleTypeDef huart1;
-
-static void SystemClock_Config(void);
-static void NPURam_enable();
-static void NPUCache_enable();
-static void Security_Config();
-static void IAC_Config();
-static void CONSOLE_Config(void);
-static void main_init(void);
-
+static void init_external_memories(void);
 extern int ei_main(void);
 
+#if 0
 /**
   * @brief  Main program
   * @param  None
@@ -47,20 +39,10 @@ extern int ei_main(void);
   */
 int main(void)
 {
-  /* Power on ICACHE */
-  MEMSYSCTL->MSCR |= MEMSYSCTL_MSCR_ICACTIVE_Msk;
-
-  //
-  __HAL_RCC_PWR_CLK_ENABLE();
-
-  /* Set back system and CPU clock source to HSI */
-  __HAL_RCC_CPUCLK_CONFIG(RCC_CPUCLKSOURCE_HSI);
-  __HAL_RCC_SYSCLK_CONFIG(RCC_SYSCLKSOURCE_HSI);
-
   HAL_Init();
+
   SystemClock_Config();
   
-
   SCB_EnableICache();
 
 #if defined(USE_DCACHE)
@@ -80,281 +62,53 @@ int main(void)
 
   return 0;
 }
+#else
 
-static void NPURam_enable()
+int main(void)
 {
-  __HAL_RCC_NPU_CLK_ENABLE();
-  __HAL_RCC_NPU_FORCE_RESET();
-  __HAL_RCC_NPU_RELEASE_RESET();
+    set_vector_table_addr();
 
-  /* Enable NPU RAMs (4x448KB) */
-  __HAL_RCC_AXISRAM3_MEM_CLK_ENABLE();
-  __HAL_RCC_AXISRAM4_MEM_CLK_ENABLE();
-  __HAL_RCC_AXISRAM5_MEM_CLK_ENABLE();
-  __HAL_RCC_AXISRAM6_MEM_CLK_ENABLE();
-  __HAL_RCC_RAMCFG_CLK_ENABLE();
-  RAMCFG_HandleTypeDef hramcfg = {0};
-  hramcfg.Instance =  RAMCFG_SRAM3_AXI;
-  HAL_RAMCFG_EnableAXISRAM(&hramcfg);
-  hramcfg.Instance =  RAMCFG_SRAM4_AXI;
-  HAL_RAMCFG_EnableAXISRAM(&hramcfg);
-  hramcfg.Instance =  RAMCFG_SRAM5_AXI;
-  HAL_RAMCFG_EnableAXISRAM(&hramcfg);
-  hramcfg.Instance =  RAMCFG_SRAM6_AXI;
-  HAL_RAMCFG_EnableAXISRAM(&hramcfg);
+    HAL_Init();
+    system_init_post();
+
+    set_mcu_cache_state(USE_MCU_ICACHE, USE_MCU_DCACHE);
+
+    /* Configure the system clock */
+#if VDDCORE_OVERDRIVE == 1
+    upscale_vddcore_level();
+    SystemClock_Config_HSI_overdrive();
+#else
+    SystemClock_Config_HSI_no_overdrive();
+#endif
+    /* Clear SLEEPDEEP bit of Cortex System Control Register */
+    CLEAR_BIT(SCB->SCR, SCB_SCR_SLEEPDEEP_Msk);
+
+    UART_Config();
+
+    NPU_Config();
+
+    init_external_memories();
+
+    RISAF_Config();
+
+    set_clk_sleep_mode();
+
+    /* start ei app */
+    ei_main();
+
+    while(1) {
+
+    }
+
+    return 0;
 }
-
-
-static void NPUCache_enable()
-{
-  hcacheaxi.Instance = CACHEAXI;
- __HAL_RCC_CACHEAXIRAM_MEM_CLK_ENABLE();
-  __HAL_RCC_CACHEAXI_CLK_ENABLE();
-  __HAL_RCC_CACHEAXI_FORCE_RESET();
-  __HAL_RCC_CACHEAXI_RELEASE_RESET();
-  int err = HAL_CACHEAXI_Init(&hcacheaxi);
-  if (err != HAL_OK)
-  {
-    while(1);
-  }
-}
-
-static void Security_Config()
-{
-  __HAL_RCC_RIFSC_CLK_ENABLE();
-  RIMC_MasterConfig_t RIMC_master = {0};
-  RIMC_master.MasterCID = RIF_CID_1;
-  RIMC_master.SecPriv = RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV;
-  HAL_RIF_RIMC_ConfigMasterAttributes(RIF_MASTER_INDEX_NPU, &RIMC_master);
-  HAL_RIF_RIMC_ConfigMasterAttributes(RIF_MASTER_INDEX_DMA2D, &RIMC_master);
-  HAL_RIF_RIMC_ConfigMasterAttributes(RIF_MASTER_INDEX_DCMIPP, &RIMC_master);
-  HAL_RIF_RIMC_ConfigMasterAttributes(RIF_MASTER_INDEX_LTDC1 , &RIMC_master);
-  HAL_RIF_RIMC_ConfigMasterAttributes(RIF_MASTER_INDEX_LTDC2 , &RIMC_master);
-  HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_NPU , RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV);
-  HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_DMA2D , RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV);
-  HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_CSI    , RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV);
-  HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_DCMIPP , RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV);
-  HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_LTDC   , RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV);
-  HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_LTDCL1 , RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV);
-  HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_LTDCL2 , RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV);
-}
-
-static void IAC_Config(void)
-{
-/* Configure IAC to trap illegal access events */
-  __HAL_RCC_IAC_CLK_ENABLE();
-  __HAL_RCC_IAC_FORCE_RESET();
-  __HAL_RCC_IAC_RELEASE_RESET();
-}
+#endif
 
 void IAC_IRQHandler(void)
 {
   while (1)
   {
   }
-}
-
-static void SystemClock_Config(void)
-{
-  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-  RCC_PeriphCLKInitTypeDef RCC_PeriphCLKInitStruct = {0};
-
-#if STM32N6570_DK_REV == STM32N6570_DK_C01
-  BSP_SMPS_Init(SMPS_VOLTAGE_OVERDRIVE);
-#else
-  /* Ensure VDDCORE=0.9V before increasing the system frequency */
-  BSP_I2C2_Init();
-  uint8_t tmp = 0x64;
-  BSP_I2C2_WriteReg(0x49 << 1, 0x01, &tmp, 1);
-  BSP_I2C2_DeInit();
-#endif
-  //HAL_Delay(1); /* Assuming Voltage Ramp Speed of 1mV/us --> 100mV increase takes 100us */
-  volatile uint32_t delay = 1000;
-  while (delay--); // Wait for voltage to stabilize, can't relay on HAL_Delay() here
-
-  // Oscillator config already done in bootrom
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_NONE;
-
-  /* PLL1 = 64 x 25 / 2 = 800MHz */
-  RCC_OscInitStruct.PLL1.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL1.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL1.PLLM = 2;
-  RCC_OscInitStruct.PLL1.PLLN = 25;
-  RCC_OscInitStruct.PLL1.PLLFractional = 0;
-  RCC_OscInitStruct.PLL1.PLLP1 = 1;
-  RCC_OscInitStruct.PLL1.PLLP2 = 1;
-
-  /* PLL2 = 64 x 125 / 8 = 1000MHz */
-  RCC_OscInitStruct.PLL2.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL2.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL2.PLLM = 8;
-  RCC_OscInitStruct.PLL2.PLLFractional = 0;
-  RCC_OscInitStruct.PLL2.PLLN = 125;
-  RCC_OscInitStruct.PLL2.PLLP1 = 1;
-  RCC_OscInitStruct.PLL2.PLLP2 = 1;
-
-  /* PLL3 = 64 x 225 / 16 = 900MHz */
-  RCC_OscInitStruct.PLL3.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL3.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL3.PLLM = 16;
-  RCC_OscInitStruct.PLL3.PLLN = 225;
-  RCC_OscInitStruct.PLL3.PLLFractional = 0;
-  RCC_OscInitStruct.PLL3.PLLP1 = 1;
-  RCC_OscInitStruct.PLL3.PLLP2 = 1;
-
-  /* PLL4 = 64 x 20 / 32 = 50MHz */
-  RCC_OscInitStruct.PLL4.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL4.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL4.PLLM = 32;
-  RCC_OscInitStruct.PLL4.PLLFractional = 0;
-  RCC_OscInitStruct.PLL4.PLLN = 20;
-  RCC_OscInitStruct.PLL4.PLLP1 = 1;
-  RCC_OscInitStruct.PLL4.PLLP2 = 1;
-
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-  {
-    while(1);
-  }
-
-  RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_CPUCLK | RCC_CLOCKTYPE_SYSCLK |
-                                 RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 |
-                                 RCC_CLOCKTYPE_PCLK2 | RCC_CLOCKTYPE_PCLK4 |
-                                 RCC_CLOCKTYPE_PCLK5);
-
-  /* CPU CLock (sysa_ck) = ic1_ck = PLL1 output/ic1_divider = 800 MHz */
-  RCC_ClkInitStruct.CPUCLKSource = RCC_CPUCLKSOURCE_IC1;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_IC2_IC6_IC11;
-  RCC_ClkInitStruct.IC1Selection.ClockSelection = RCC_ICCLKSOURCE_PLL1;
-  RCC_ClkInitStruct.IC1Selection.ClockDivider = 1;
-
-  /* AXI Clock (sysb_ck) = ic2_ck = PLL1 output/ic2_divider = 400 MHz */
-  RCC_ClkInitStruct.IC2Selection.ClockSelection = RCC_ICCLKSOURCE_PLL1;
-  RCC_ClkInitStruct.IC2Selection.ClockDivider = 2;
-
-  /* NPU Clock (sysc_ck) = ic6_ck = PLL2 output/ic6_divider = 1000 MHz */
-  RCC_ClkInitStruct.IC6Selection.ClockSelection = RCC_ICCLKSOURCE_PLL2;
-  RCC_ClkInitStruct.IC6Selection.ClockDivider = 1;
-
-  /* AXISRAM3/4/5/6 Clock (sysd_ck) = ic11_ck = PLL3 output/ic11_divider = 900 MHz */
-  RCC_ClkInitStruct.IC11Selection.ClockSelection = RCC_ICCLKSOURCE_PLL3;
-  RCC_ClkInitStruct.IC11Selection.ClockDivider = 1;
-
-  /* HCLK = sysb_ck / HCLK divider = 200 MHz */
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV2;
-
-  /* PCLKx = HCLK / PCLKx divider = 200 MHz */
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_APB1_DIV1;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV1;
-  RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV1;
-  RCC_ClkInitStruct.APB5CLKDivider = RCC_APB5_DIV1;
-
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct) != HAL_OK)
-  {
-    while(1);
-  }
-
-  RCC_PeriphCLKInitStruct.PeriphClockSelection = 0;
-
-  /* XSPI1 kernel clock (ck_ker_xspi1) = HCLK = 200MHz */
-  RCC_PeriphCLKInitStruct.PeriphClockSelection |= RCC_PERIPHCLK_XSPI1;
-  RCC_PeriphCLKInitStruct.Xspi1ClockSelection = RCC_XSPI1CLKSOURCE_HCLK;
-
-  /* XSPI2 kernel clock (ck_ker_xspi1) = HCLK =  200MHz */
-  RCC_PeriphCLKInitStruct.PeriphClockSelection |= RCC_PERIPHCLK_XSPI2;
-  RCC_PeriphCLKInitStruct.Xspi2ClockSelection = RCC_XSPI2CLKSOURCE_HCLK;
-
-  /*  */
-  RCC_PeriphCLKInitStruct.PeriphClockSelection |= RCC_PERIPHCLK_USART1;
-  RCC_PeriphCLKInitStruct.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
-
-  if (HAL_RCCEx_PeriphCLKConfig(&RCC_PeriphCLKInitStruct) != HAL_OK)
-  {
-    while (1);
-  }
-}
-
-static void CONSOLE_Config()
-{
-  GPIO_InitTypeDef gpio_init;
-
-  setvbuf(stdin, NULL, _IONBF, 0);
-  setvbuf(stdout, NULL, _IONBF, 0);
-
-  __HAL_RCC_USART1_CLK_ENABLE();
-  __HAL_RCC_GPIOE_CLK_ENABLE();
-
- /* DISCO & NUCLEO USART1 (PE5/PE6) */
-  gpio_init.Mode      = GPIO_MODE_AF_PP;
-  gpio_init.Pull      = GPIO_PULLUP;
-  gpio_init.Speed     = GPIO_SPEED_FREQ_HIGH;
-  gpio_init.Pin       = GPIO_PIN_5 | GPIO_PIN_6;
-  gpio_init.Alternate = GPIO_AF7_USART1;
-  HAL_GPIO_Init(GPIOE, &gpio_init);
-
-  huart1.Instance          = USART1;
-  huart1.Init.BaudRate     = 115200;
-  huart1.Init.Mode         = UART_MODE_TX_RX;
-  huart1.Init.Parity       = UART_PARITY_NONE;
-  huart1.Init.WordLength   = UART_WORDLENGTH_8B;
-  huart1.Init.StopBits     = UART_STOPBITS_1;
-  huart1.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
-  huart1.Init.OverSampling = UART_OVERSAMPLING_8;
-  if (HAL_UART_Init(&huart1) != HAL_OK)
-  {
-    while (1);
-  }
-  if (HAL_UARTEx_SetRxFifoThreshold(&huart1, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK)
-  {
-    while (1);
-  }
-  if (HAL_UARTEx_EnableFifoMode(&huart1) != HAL_OK)
-  {
-    while (1);
-  }
-}
-
-static void main_init(void)
-{
-  CONSOLE_Config();
-
-  NPURam_enable();
-  Fuse_Programming();
-
-  NPUCache_enable();
-
-  /*** External RAM and NOR Flash *********************************************/
-  BSP_XSPI_RAM_Init(0);
-  BSP_XSPI_RAM_EnableMemoryMappedMode(0);
-
-  BSP_XSPI_NOR_Init_t NOR_Init;
-  NOR_Init.InterfaceMode = BSP_XSPI_NOR_OPI_MODE;
-  NOR_Init.TransferRate = BSP_XSPI_NOR_DTR_TRANSFER;
-  BSP_XSPI_NOR_Init(0, &NOR_Init);
-  BSP_XSPI_NOR_EnableMemoryMappedMode(0);
-
-  /* Set all required IPs as secure privileged */
-  Security_Config();
-
-  IAC_Config();
-
-  /* Keep all IP's enabled during WFE so they can wake up CPU. Fine tune
-   * this if you want to save maximum power
-   */
-  LL_BUS_EnableClockLowPower(~0);
-  LL_MEM_EnableClockLowPower(~0);
-  LL_AHB1_GRP1_EnableClockLowPower(~0);
-  LL_AHB2_GRP1_EnableClockLowPower(~0);
-  LL_AHB3_GRP1_EnableClockLowPower(~0);
-  LL_AHB4_GRP1_EnableClockLowPower(~0);
-  LL_AHB5_GRP1_EnableClockLowPower(~0);
-  LL_APB1_GRP1_EnableClockLowPower(~0);
-  LL_APB1_GRP2_EnableClockLowPower(~0);
-  LL_APB2_GRP1_EnableClockLowPower(~0);
-  LL_APB4_GRP1_EnableClockLowPower(~0);
-  LL_APB4_GRP2_EnableClockLowPower(~0);
-  LL_APB5_GRP1_EnableClockLowPower(~0);
-  LL_MISC_EnableClockLowPower(~0);
 }
 
 #ifdef  USE_FULL_ASSERT
@@ -381,4 +135,28 @@ void assert_failed(uint8_t* file, uint32_t line)
 __attribute__ ((section (".keep_me"))) void app_clean_invalidate_dbg()
 {
   SCB_CleanInvalidateDCache();
+}
+
+static void init_external_memories(void)
+{
+#if defined(USE_EXTERNAL_MEMORY_DEVICES) && USE_EXTERNAL_MEMORY_DEVICES == 1
+  BSP_XSPI_NOR_Init_t Flash;
+  
+#if (NUCLEO_N6_CONFIG == 0)
+  BSP_XSPI_RAM_Init(0);
+  BSP_XSPI_RAM_EnableMemoryMappedMode(0);
+  /* Configure the memory in octal DTR */
+  Flash.InterfaceMode = MX66UW1G45G_OPI_MODE;
+  Flash.TransferRate = MX66UW1G45G_DTR_TRANSFER;
+#else
+  Flash.InterfaceMode = MX25UM51245G_OPI_MODE;
+  Flash.TransferRate = MX25UM51245G_DTR_TRANSFER;
+#endif
+  
+  if(BSP_XSPI_NOR_Init(0, &Flash) != BSP_ERROR_NONE)
+  {
+        __BKPT(0);
+  }
+  BSP_XSPI_NOR_EnableMemoryMappedMode(0);
+#endif 
 }
