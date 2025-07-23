@@ -38,6 +38,8 @@ static void IAC_Config();
 static void CONSOLE_Config(void);
 static void main_init(void);
 
+extern int ei_main(void);
+
 /**
   * @brief  Main program
   * @param  None
@@ -45,16 +47,19 @@ static void main_init(void);
   */
 int main(void)
 {
-  setvbuf(stdin, NULL, _IONBF, 0);
-  setvbuf(stdout, NULL, _IONBF, 0);
   /* Power on ICACHE */
   MEMSYSCTL->MSCR |= MEMSYSCTL_MSCR_ICACTIVE_Msk;
+
+  //
+  __HAL_RCC_PWR_CLK_ENABLE();
 
   /* Set back system and CPU clock source to HSI */
   __HAL_RCC_CPUCLK_CONFIG(RCC_CPUCLKSOURCE_HSI);
   __HAL_RCC_SYSCLK_CONFIG(RCC_SYSCLKSOURCE_HSI);
 
   HAL_Init();
+  SystemClock_Config();
+  
 
   SCB_EnableICache();
 
@@ -64,8 +69,11 @@ int main(void)
   SCB_EnableDCache();
 #endif
 
+  HAL_ResumeTick();
   main_init();
 
+  ei_main();
+  
   while(1) {
 
   }
@@ -161,7 +169,9 @@ static void SystemClock_Config(void)
   BSP_I2C2_WriteReg(0x49 << 1, 0x01, &tmp, 1);
   BSP_I2C2_DeInit();
 #endif
-  HAL_Delay(1); /* Assuming Voltage Ramp Speed of 1mV/us --> 100mV increase takes 100us */
+  //HAL_Delay(1); /* Assuming Voltage Ramp Speed of 1mV/us --> 100mV increase takes 100us */
+  volatile uint32_t delay = 1000;
+  while (delay--); // Wait for voltage to stabilize, can't relay on HAL_Delay() here
 
   // Oscillator config already done in bootrom
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_NONE;
@@ -254,6 +264,10 @@ static void SystemClock_Config(void)
   RCC_PeriphCLKInitStruct.PeriphClockSelection |= RCC_PERIPHCLK_XSPI2;
   RCC_PeriphCLKInitStruct.Xspi2ClockSelection = RCC_XSPI2CLKSOURCE_HCLK;
 
+  /*  */
+  RCC_PeriphCLKInitStruct.PeriphClockSelection |= RCC_PERIPHCLK_USART1;
+  RCC_PeriphCLKInitStruct.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
+
   if (HAL_RCCEx_PeriphCLKConfig(&RCC_PeriphCLKInitStruct) != HAL_OK)
   {
     while (1);
@@ -263,6 +277,9 @@ static void SystemClock_Config(void)
 static void CONSOLE_Config()
 {
   GPIO_InitTypeDef gpio_init;
+
+  setvbuf(stdin, NULL, _IONBF, 0);
+  setvbuf(stdout, NULL, _IONBF, 0);
 
   __HAL_RCC_USART1_CLK_ENABLE();
   __HAL_RCC_GPIOE_CLK_ENABLE();
@@ -299,8 +316,6 @@ static void CONSOLE_Config()
 
 static void main_init(void)
 {
-  SystemClock_Config();
-
   CONSOLE_Config();
 
   NPURam_enable();
@@ -340,29 +355,6 @@ static void main_init(void)
   LL_APB4_GRP2_EnableClockLowPower(~0);
   LL_APB5_GRP1_EnableClockLowPower(~0);
   LL_MISC_EnableClockLowPower(~0);
-}
-
-HAL_StatusTypeDef MX_DCMIPP_ClockConfig(DCMIPP_HandleTypeDef *hdcmipp)
-{
-  RCC_PeriphCLKInitTypeDef RCC_PeriphCLKInitStruct = {0};
-  HAL_StatusTypeDef ret;
-
-  RCC_PeriphCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_DCMIPP;
-  RCC_PeriphCLKInitStruct.DcmippClockSelection = RCC_DCMIPPCLKSOURCE_IC17;
-  RCC_PeriphCLKInitStruct.ICSelection[RCC_IC17].ClockSelection = RCC_ICCLKSOURCE_PLL2;
-  RCC_PeriphCLKInitStruct.ICSelection[RCC_IC17].ClockDivider = 3;
-  ret = HAL_RCCEx_PeriphCLKConfig(&RCC_PeriphCLKInitStruct);
-  if (ret)
-    return ret;
-
-  RCC_PeriphCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_CSI;
-  RCC_PeriphCLKInitStruct.ICSelection[RCC_IC18].ClockSelection = RCC_ICCLKSOURCE_PLL1;
-  RCC_PeriphCLKInitStruct.ICSelection[RCC_IC18].ClockDivider = 40;
-  ret = HAL_RCCEx_PeriphCLKConfig(&RCC_PeriphCLKInitStruct);
-  if (ret)
-    return ret;
-
-  return HAL_OK;
 }
 
 #ifdef  USE_FULL_ASSERT
