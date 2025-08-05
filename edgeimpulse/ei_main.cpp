@@ -37,10 +37,6 @@
 #include "edge-impulse-sdk/porting/ei_classifier_porting.h"
 #include "model-parameters/model_variables.h"
 
-// to avoid error
-uint8_t *global_camera_buffer;
-uint8_t *snapshot_buf;
-
 /* Private variables ------------------------------------------------------- */
 static const float features[] = {
     // copy raw features here
@@ -56,7 +52,7 @@ extern "C" int ei_main(void)
 {
     ei_impulse_result_t result = {nullptr};
 
-    ei_printf("Edge Impulse standalone inferencing (STM32N6)\n");
+    ei_printf("Edge Impulse standalone inferencing (ST STM32N6570-DK)\n");
     ei_printf("SystemCoreClock: %ld\n", SystemCoreClock);
 
     if (sizeof(features) / sizeof(float) != EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE) {
@@ -75,6 +71,7 @@ extern "C" int ei_main(void)
         EI_IMPULSE_ERROR res = run_classifier(&features_signal, &result, false);
 
         if (res != 0) {
+            ei_printf("Error while running classifier: %d\n", res);
             return 1;
         }
 

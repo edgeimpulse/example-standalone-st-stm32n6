@@ -31,39 +31,6 @@
 static void init_external_memories(void);
 extern int ei_main(void);
 
-#if 0
-/**
-  * @brief  Main program
-  * @param  None
-  * @retval None
-  */
-int main(void)
-{
-  HAL_Init();
-
-  SystemClock_Config();
-  
-  SCB_EnableICache();
-
-#if defined(USE_DCACHE)
-  /* Power on DCACHE */
-  MEMSYSCTL->MSCR |= MEMSYSCTL_MSCR_DCACTIVE_Msk;
-  SCB_EnableDCache();
-#endif
-
-  HAL_ResumeTick();
-  main_init();
-
-  ei_main();
-  
-  while(1) {
-
-  }
-
-  return 0;
-}
-#else
-
 int main(void)
 {
     set_vector_table_addr();
@@ -102,7 +69,6 @@ int main(void)
 
     return 0;
 }
-#endif
 
 void IAC_IRQHandler(void)
 {
