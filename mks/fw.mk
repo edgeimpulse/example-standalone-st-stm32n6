@@ -26,6 +26,24 @@ C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/STM32N6570-DK/stm32n6570_discovery_bus
 C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/STM32N6570-DK/stm32n6570_discovery_xspi.c
 C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/Components/aps256xx/aps256xx.c
 C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/Components/mx66uw1g45g/mx66uw1g45g.c
+C_SOURCES_FW += $(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/DSP/Source/TransformFunctions/*.c) \
+	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/DSP/Source/CommonTables/*.c) \
+	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/DSP/Source/BasicMathFunctions/*.c) \
+	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/DSP/Source/ComplexMathFunctions/*.c) \
+	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/DSP/Source/FastMathFunctions/*.c) \
+	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/DSP/Source/SupportFunctions/*.c) \
+	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/DSP/Source/MatrixFunctions/*.c) \
+	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/DSP/Source/StatisticsFunctions/*.c) \
+	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/NN/Source/ActivationFunctions/*.c) \
+	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/NN/Source/BasicMathFunctions/*.c) \
+	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/NN/Source/ConcatenationFunctions/*.c) \
+	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/NN/Source/ConvolutionFunctions/*.c) \
+	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/NN/Source/FullyConnectedFunctions/*.c) \
+	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/NN/Source/NNSupportFunctions/*.c) \
+	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/NN/Source/PoolingFunctions/*.c) \
+	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/NN/Source/ReshapeFunctions/*.c) \
+	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/NN/Source/SoftmaxFunctions/*.c) \
+	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/NN/Source/SVDFunctions/*.c) \
 
 C_INCLUDES_FW += -I$(FW_REL_DIR)/Drivers/STM32N6xx_HAL_Driver/Inc
 C_INCLUDES_FW += -I$(FW_REL_DIR)/Drivers/STM32N6xx_HAL_Driver/Inc/Legacy
