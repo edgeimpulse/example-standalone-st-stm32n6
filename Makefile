@@ -52,6 +52,7 @@ C_SOURCES += Src/stm32n6xx_it.c
 C_SOURCES += Src/misc_toolbox.c
 C_SOURCES += Src/system_clock_config.c
 C_SOURCES += Src/sysmem.c
+C_SOURCES += Src/timer_config.c
 C_SOURCES += Model/network.c
 
 # ASM sources
@@ -136,7 +137,7 @@ C_DEFS += -DAPP_HAS_PARALLEL_NETWORKS=0
 C_INCLUDES += -IInc
 CXX_VERSION_FLAGS = -std=gnu++11
 
-CXX_COMPILER_FLAGS = -fpermissive -fno-rtti -fno-unwind-tables -fno-exceptions -fdata-sections
+CXX_COMPILER_FLAGS = -fpermissive -fno-rtti -fno-unwind-tables -fdata-sections
 
 # For now using the C flags for C++ as well
 CXXFLAGS = $(MCU) $(C_DEFS) $(CXX_INCLUDES) $(OPT) $(CXX_VERSION_FLAGS) $(CXX_COMPILER_FLAGS)

@@ -27,6 +27,9 @@
 #include <stdio.h>
 #include "misc_toolbox.h"
 #include "npu_cache.h"
+#if defined(USE_NS_TIMER) && (USE_NS_TIMER == 1)
+#include "timer_config.h"
+#endif
 
 static void init_external_memories(void);
 extern int ei_main(void);
@@ -53,6 +56,10 @@ int main(void)
     UART_Config();
 
     NPU_Config();
+
+#if defined(USE_NS_TIMER) && (USE_NS_TIMER == 1)
+    timer_config_init();
+#endif
 
     init_external_memories();
 
