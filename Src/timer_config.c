@@ -32,19 +32,31 @@ HAL_StatusTypeDef timer_config_init(void)
     /* Get clock configuration */
     HAL_RCC_GetClockConfig(&clkconfig);
 
+    RCC_PeriphCLKInitTypeDef  PeriphClkInit;
+    HAL_RCCEx_GetPeriphCLKConfig(&PeriphClkInit);
+
     /* Get APB1 prescaler */
     uwAPB1Prescaler = clkconfig.APB1CLKDivider;
 
     /* Compute TIM2 clock */
     if (uwAPB1Prescaler == RCC_APB1_DIV1) {
-        uwTimclock = HAL_RCC_GetPCLK1Freq();
+        uwTimclock = HAL_RCC_GetSysClockFreq();
     }
     else {
-        uwTimclock = 2UL * HAL_RCC_GetPCLK1Freq();
+        uwTimclock = 2UL * HAL_RCC_GetSysClockFreq();
+    }
+
+    if (RCC_TIMPRES_DIV2 == PeriphClkInit.TIMPresSelection) {
+        uwTimclock /= 2;
+    }
+    else if (RCC_TIMPRES_DIV4 == PeriphClkInit.TIMPresSelection) {
+        uwTimclock /= 4;
+    }
+    else if (RCC_TIMPRES_DIV8 == PeriphClkInit.TIMPresSelection) {
+        uwTimclock /= 8;
     }
 
     fact = __HAL_TIM_CALC_PSC(uwTimclock, TIM_CNT_FREQ_NS);
-    fact *=4 ;
     overflow_time = ((uint64_t)1 << 32) / fact;
     
     /* Initialize TIM2 */

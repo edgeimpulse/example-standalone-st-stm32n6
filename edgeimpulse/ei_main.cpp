@@ -49,6 +49,9 @@ int raw_feature_get_data(size_t offset, size_t length, float *out_ptr)
     return 0;
 }
 
+/**
+ * 
+ */
 extern "C" int ei_main(void)
 {
     ei_impulse_result_t result = {nullptr};
@@ -77,6 +80,7 @@ extern "C" int ei_main(void)
         }
 
         display_results(&ei_default_impulse, &result);
+        ei_sleep(2000);
     }while(1);
 
     return  0;
