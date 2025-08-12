@@ -12,3 +12,5 @@
 # model build output
 /Model/st_ai_output
 /Model/st_ai_ws
+/Model/*.tflite
+/Model/*.lite
