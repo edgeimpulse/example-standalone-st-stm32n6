@@ -20,6 +20,8 @@
 
 #define USE_DCACHE
 
+#if 0
+
 #if defined(USE_IMX335_SENSOR)
   #define CAMERA_WIDTH 2592
   #define CAMERA_HEIGHT 1944
@@ -62,6 +64,8 @@
 
 #ifndef CAMERA_FLIP
 #define CAMERA_FLIP CMW_MIRRORFLIP_NONE
+#endif
+
 #endif
 
 #define LCD_BG_WIDTH 800

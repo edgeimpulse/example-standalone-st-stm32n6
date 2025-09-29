@@ -23,7 +23,11 @@
 #include "mcu_cache.h"
 #include "app_fuseprogramming.h"
 #include "main.h"
+#if (NUCLEO_N6_CONFIG == 0)
 #include "stm32n6570_discovery.h"
+#else
+#include "stm32n6xx_nucleo.h"
+#endif
 #include <stdio.h>
 #include "misc_toolbox.h"
 #include "npu_cache.h"

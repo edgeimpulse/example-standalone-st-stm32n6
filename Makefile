@@ -101,11 +101,12 @@ MCU = $(CPU) $(FPU)
 
 # C defines
 C_DEFS += -DSTM32N657xx
-C_DEFS += -DUSE_STM32N6570_DK
+#C_DEFS += -DUSE_STM32N6570_DK
+C_DEFS += -DUSE_STM32N6570_NUCLEO_REV_B01
 C_DEFS += -DUSE_FULL_ASSERT
 C_DEFS += -DUSE_FULL_LL_DRIVER
 C_DEFS += -DVECT_TAB_SRAM
-C_DEFS += -DNUCLEO_N6_CONFIG=0
+C_DEFS += -DNUCLEO_N6_CONFIG=1
 C_DEFS += -DUSER_VECT_TAB_ADDRESS
 
 ifeq ($(REV_BOARD),B01)
@@ -175,7 +176,7 @@ all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET
 include mks/ei.mk
 include mks/fw.mk
 include mks/ai.mk
-include mks/cmw.mk
+#include mks/cmw.mk
 include mks/gcc.mk
 
 #CXX_INCLUDES += $(C_INCLUDES_THREADX)

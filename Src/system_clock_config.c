@@ -2,7 +2,11 @@
 #include <string.h>
 #include "system_clock_config.h"
 #include "stm32n6xx_hal.h"
-#include "stm32n6570_discovery.h" // Used for BSP functions
+#if (NUCLEO_N6_CONFIG == 0)
+#include "stm32n6570_discovery.h"
+#else
+#include "stm32n6xx_nucleo.h"
+#endif
 
 /**
   * @brief  System Clock Configuration
@@ -376,14 +380,14 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL2.PLLP1 = 1;
   RCC_OscInitStruct.PLL2.PLLP2 = 1;
 
-  /* PLL3 = 64 x 225 / 16 = 900MHz */
+  /* PLL3 = (64 x 225 / 8) / (1 * 2) = 900MHz */
   RCC_OscInitStruct.PLL3.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL3.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL3.PLLM = 16;
+  RCC_OscInitStruct.PLL3.PLLM = 8;
   RCC_OscInitStruct.PLL3.PLLN = 225;
   RCC_OscInitStruct.PLL3.PLLFractional = 0;
   RCC_OscInitStruct.PLL3.PLLP1 = 1;
-  RCC_OscInitStruct.PLL3.PLLP2 = 1;
+  RCC_OscInitStruct.PLL3.PLLP2 = 2;
 
   /* PLL4 = 64 x 20 / 32 = 50MHz */
   RCC_OscInitStruct.PLL4.PLLState = RCC_PLL_ON;

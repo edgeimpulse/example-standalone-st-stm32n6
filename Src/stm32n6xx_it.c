@@ -138,6 +138,8 @@ void SysTick_Handler(void)
 /*  file (startup_stm32n6xx.s).                                               */
 /******************************************************************************/
 
+#if 0 // not using camera
+
 void CSI_IRQHandler(void)
 {
   HAL_DCMIPP_CSI_IRQHandler(CMW_CAMERA_GetDCMIPPHandle());
@@ -147,3 +149,5 @@ void DCMIPP_IRQHandler(void)
 {
   HAL_DCMIPP_IRQHandler(CMW_CAMERA_GetDCMIPPHandle());
 }
+
+#endif

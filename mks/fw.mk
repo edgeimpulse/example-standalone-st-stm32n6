@@ -23,11 +23,15 @@ C_SOURCES_FW += $(FW_REL_DIR)/Drivers/STM32N6xx_HAL_Driver/Src/stm32n6xx_hal_tim
 C_SOURCES_FW += $(FW_REL_DIR)/Drivers/STM32N6xx_HAL_Driver/Src/stm32n6xx_hal_tim_ex.c
 C_SOURCES_FW += $(FW_REL_DIR)/Drivers/STM32N6xx_HAL_Driver/Src/stm32n6xx_hal_uart.c
 C_SOURCES_FW += $(FW_REL_DIR)/Drivers/STM32N6xx_HAL_Driver/Src/stm32n6xx_hal_uart_ex.c
-C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/STM32N6570-DK/stm32n6570_discovery.c
-C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/STM32N6570-DK/stm32n6570_discovery_bus.c
-C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/STM32N6570-DK/stm32n6570_discovery_xspi.c
+#C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/STM32N6570-DK/stm32n6570_discovery.c
+#C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/STM32N6570-DK/stm32n6570_discovery_bus.c
+#C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/STM32N6570-DK/stm32n6570_discovery_xspi.c
+C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/STM32N6xx_Nucleo/stm32n6xx_nucleo.c
+C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/STM32N6xx_Nucleo/stm32n6xx_nucleo_bus.c
+C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/STM32N6xx_Nucleo/stm32n6xx_nucleo_xspi.c
 C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/Components/aps256xx/aps256xx.c
-C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/Components/mx66uw1g45g/mx66uw1g45g.c
+#C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/Components/mx66uw1g45g/mx66uw1g45g.c
+C_SOURCES_FW += $(FW_REL_DIR)/Drivers/BSP/Components/mx25um51245g/mx25um51245g.c
 C_SOURCES_FW += $(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/DSP/Source/TransformFunctions/*.c) \
 	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/DSP/Source/CommonTables/*.c) \
 	$(wildcard edgeimpulse/edge-impulse-sdk/CMSIS/DSP/Source/BasicMathFunctions/*.c) \
@@ -57,9 +61,11 @@ C_INCLUDES_FW += -Iedgeimpulse/edge-impulse-sdk/CMSIS/NN/Include
 C_INCLUDES_FW += -Iedgeimpulse
 
 C_INCLUDES_FW += -I$(FW_REL_DIR)/Drivers/BSP/Components/Common
-C_INCLUDES_FW += -I$(FW_REL_DIR)/Drivers/BSP/STM32N6570-DK
+#C_INCLUDES_FW += -I$(FW_REL_DIR)/Drivers/BSP/STM32N6570-DK
+C_INCLUDES_FW += -I$(FW_REL_DIR)/Drivers/BSP/STM32N6xx_Nucleo
 #C_INCLUDES_FW += -I$(FW_REL_DIR)/Utilities/lcd
 C_INCLUDES_FW += -I$(FW_REL_DIR)/Drivers/BSP/Components/aps256xx
+C_INCLUDES_FW += -IInc
 
 C_SOURCES += $(C_SOURCES_FW)
 C_INCLUDES += $(C_INCLUDES_FW)
