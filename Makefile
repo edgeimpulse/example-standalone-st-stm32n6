@@ -58,7 +58,7 @@ C_SOURCES += Model/network.c
 # ASM sources
 ASM_SOURCES =
 ASM_SOURCES_S =
-GCC_PATH=~/work/toolchain/arm-gnu-toolchain-13.3.rel1-darwin-arm64-arm-none-eabi/bin
+#GCC_PATH=
 #######################################
 # binaries
 #######################################

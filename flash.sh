@@ -2,7 +2,6 @@
 set -e
 
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
-PATH="/Applications/STMicroelectronics/STM32Cube/STM32CubeProgrammer/STM32CubeProgrammer.app/Contents/MacOs/bin:$PATH"
 EL="$(dirname "$(which STM32_Programmer_CLI)")/ExternalLoader/MX66UW1G45G_STM32N6570-DK.stldr"
 
 TARGET=$1
@@ -13,7 +12,6 @@ fi
 
 echo ${EL}
 
-GCC_PATH=~/work/toolchain/arm-gnu-toolchain-13.3.rel1-darwin-arm64-arm-none-eabi/bin
 arm-none-eabi-objcopy -O ihex build/Project.elf build/Project.hex
 arm-none-eabi-objcopy -O binary build/Project.elf build/Project.bin
 
