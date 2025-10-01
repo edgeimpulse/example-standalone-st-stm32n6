@@ -27,7 +27,7 @@ elif [ "$TARGET" == "all" ]; then
 elif [ "$TARGET" == "weights" ]; then
     STM32_Programmer_CLI -c port=SWD mode=HOTPLUG ap=1 -el ${EL} -hardRst -w Model/network_data.hex
 elif [ "$TARGET" == "bootloader" ]; then
-    STM32_Programmer_CLI -c port=SWD mode=HOTPLUG ap=1 -el ${EL} -hardRst -w ai_fsbl_cut_2_0.hex
+    STM32_Programmer_CLI -c port=SWD mode=HOTPLUG ap=1 -el ${EL} -hardRst -w ai_fsbl.hex
 else
     echo "Invalid target: $TARGET"
     exit 1
