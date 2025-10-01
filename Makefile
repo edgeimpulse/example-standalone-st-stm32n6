@@ -155,7 +155,8 @@ CFLAGS += -std=gnu11
 # LDFLAGS
 #######################################
 # link script
-LDSCRIPT = Gcc/STM32N657xx.ld
+#LDSCRIPT = Gcc/STM32N657xx.ld
+LDSCRIPT = Gcc/STM32N657xx_nucleo.ld
 
 # libraries
 LIBS = -lc -lm -lnosys
@@ -176,7 +177,6 @@ all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET
 include mks/ei.mk
 include mks/fw.mk
 include mks/ai.mk
-#include mks/cmw.mk
 include mks/gcc.mk
 
 #CXX_INCLUDES += $(C_INCLUDES_THREADX)

@@ -29,5 +29,6 @@ void SystemClock_Config_64MHZ(void);
 void SystemClock_Config_HSI_overdrive(void);
 void SystemClock_Config_HSI_no_overdrive(void);
 void SystemClock_Config(void);
+void SystemClock_Config_Nucleo(void);
 
 #endif /* _SYSTEM_CLOCK_CONFIG_H */
