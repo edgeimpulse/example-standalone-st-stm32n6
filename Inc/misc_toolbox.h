@@ -59,4 +59,6 @@ void system_init_post(void);
 void fuse_vddio(void);
 #endif
 
+void IAC_Config(void);
+
 #endif // MISC_TOOLBOX_H

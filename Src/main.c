@@ -48,7 +48,9 @@ int main(void)
     set_mcu_cache_state(USE_MCU_ICACHE, USE_MCU_DCACHE);
 
     /* Configure the system clock */
-#if VDDCORE_OVERDRIVE == 1
+#if (NUCLEO_N6_CONFIG == 1)
+    SystemClock_Config_Nucleo();
+#elif VDDCORE_OVERDRIVE == 1
     upscale_vddcore_level();
     SystemClock_Config_HSI_overdrive();
 #else
@@ -68,6 +70,7 @@ int main(void)
     init_external_memories();
 
     RISAF_Config();
+    IAC_Config();
 
     set_clk_sleep_mode();
 
@@ -86,6 +89,35 @@ void IAC_IRQHandler(void)
   while (1)
   {
   }
+}
+
+
+
+/* Allow to debug with cache enable */
+__attribute__ ((section (".keep_me"))) void app_clean_invalidate_dbg()
+{
+  SCB_CleanInvalidateDCache();
+}
+
+static void init_external_memories(void)
+{
+#if defined(USE_EXTERNAL_MEMORY_DEVICES) && USE_EXTERNAL_MEMORY_DEVICES == 1
+  BSP_XSPI_NOR_Init_t Flash;
+  
+#if (NUCLEO_N6_CONFIG == 0)
+  BSP_XSPI_RAM_Init(0);
+  BSP_XSPI_RAM_EnableMemoryMappedMode(0);  
+#endif
+
+  Flash.InterfaceMode = BSP_XSPI_NOR_OPI_MODE;
+  Flash.TransferRate = BSP_XSPI_NOR_DTR_TRANSFER;
+
+  if(BSP_XSPI_NOR_Init(0, &Flash) != BSP_ERROR_NONE)
+  {
+        __BKPT(0);
+  }
+  BSP_XSPI_NOR_EnableMemoryMappedMode(0);
+#endif 
 }
 
 #ifdef  USE_FULL_ASSERT
@@ -107,33 +139,3 @@ void assert_failed(uint8_t* file, uint32_t line)
   }
 }
 #endif
-
-/* Allow to debug with cache enable */
-__attribute__ ((section (".keep_me"))) void app_clean_invalidate_dbg()
-{
-  SCB_CleanInvalidateDCache();
-}
-
-static void init_external_memories(void)
-{
-#if defined(USE_EXTERNAL_MEMORY_DEVICES) && USE_EXTERNAL_MEMORY_DEVICES == 1
-  BSP_XSPI_NOR_Init_t Flash;
-  
-#if (NUCLEO_N6_CONFIG == 0)
-  BSP_XSPI_RAM_Init(0);
-  BSP_XSPI_RAM_EnableMemoryMappedMode(0);
-  /* Configure the memory in octal DTR */
-  Flash.InterfaceMode = MX66UW1G45G_OPI_MODE;
-  Flash.TransferRate = MX66UW1G45G_DTR_TRANSFER;
-#else
-  Flash.InterfaceMode = MX25UM51245G_OPI_MODE;
-  Flash.TransferRate = MX25UM51245G_DTR_TRANSFER;
-#endif
-  
-  if(BSP_XSPI_NOR_Init(0, &Flash) != BSP_ERROR_NONE)
-  {
-        __BKPT(0);
-  }
-  BSP_XSPI_NOR_EnableMemoryMappedMode(0);
-#endif 
-}

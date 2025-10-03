@@ -88,7 +88,7 @@ BIN = $(CP) -O binary
 FLASHER = STM32_Programmer_CLI
 SIGNER = STM32MP_SigningTool_CLI
 OBJCOPY = arm-none-eabi-objcopy
-EL = "$(shell dirname "$(shell which $(FLASHER))")/ExternalLoader/MX66UW1G45G_STM32N6570-DK.stldr"
+EL = "$(shell dirname "$(shell which $(FLASHER))")/ExternalLoader/MX25UM51245G_STM32N6570-NUCLEO.stldr"
 
 #######################################
 # CFLAGS
