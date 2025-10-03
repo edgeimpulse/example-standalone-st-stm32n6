@@ -91,8 +91,6 @@ void IAC_IRQHandler(void)
   }
 }
 
-
-
 /* Allow to debug with cache enable */
 __attribute__ ((section (".keep_me"))) void app_clean_invalidate_dbg()
 {
@@ -139,3 +137,41 @@ void assert_failed(uint8_t* file, uint32_t line)
   }
 }
 #endif
+
+HAL_StatusTypeDef MX_DCMIPP_ClockConfig(DCMIPP_HandleTypeDef *hdcmipp)
+{
+  RCC_PeriphCLKInitTypeDef RCC_PeriphCLKInitStruct = {0};
+  HAL_StatusTypeDef ret;
+
+  RCC_PeriphCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_DCMIPP;
+  RCC_PeriphCLKInitStruct.DcmippClockSelection = RCC_DCMIPPCLKSOURCE_IC17;
+  RCC_PeriphCLKInitStruct.ICSelection[RCC_IC17].ClockSelection = RCC_ICCLKSOURCE_PLL2;
+  RCC_PeriphCLKInitStruct.ICSelection[RCC_IC17].ClockDivider = 3;
+  ret = HAL_RCCEx_PeriphCLKConfig(&RCC_PeriphCLKInitStruct);
+  if (ret)
+    return ret;
+
+  RCC_PeriphCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_CSI;
+  RCC_PeriphCLKInitStruct.ICSelection[RCC_IC18].ClockSelection = RCC_ICCLKSOURCE_PLL1;
+  RCC_PeriphCLKInitStruct.ICSelection[RCC_IC18].ClockDivider = 40;
+  ret = HAL_RCCEx_PeriphCLKConfig(&RCC_PeriphCLKInitStruct);
+  if (ret)
+    return ret;
+
+  return HAL_OK;
+}
+
+void HAL_CACHEAXI_MspInit(CACHEAXI_HandleTypeDef *hcacheaxi)
+{
+  __HAL_RCC_CACHEAXIRAM_MEM_CLK_ENABLE();
+  __HAL_RCC_CACHEAXI_CLK_ENABLE();
+  __HAL_RCC_CACHEAXI_FORCE_RESET();
+  __HAL_RCC_CACHEAXI_RELEASE_RESET();
+}
+
+void HAL_CACHEAXI_MspDeInit(CACHEAXI_HandleTypeDef *hcacheaxi)
+{
+  __HAL_RCC_CACHEAXIRAM_MEM_CLK_DISABLE();
+  __HAL_RCC_CACHEAXI_CLK_DISABLE();
+  __HAL_RCC_CACHEAXI_FORCE_RESET();
+}

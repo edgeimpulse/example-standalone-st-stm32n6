@@ -3,7 +3,7 @@ set -e
 
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
-EL="$(dirname "$(which STM32_Programmer_CLI)")/ExternalLoader/MX66UW1G45G_STM32N6570-DK.stldr"
+EL="$(dirname "$(which STM32_Programmer_CLI)")/ExternalLoader/MX25UM51245G_STM32N6570-NUCLEO.stldr"
 
 TARGET=$1
 

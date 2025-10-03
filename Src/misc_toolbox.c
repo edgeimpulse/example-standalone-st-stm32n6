@@ -25,46 +25,6 @@
 
 UART_HandleTypeDef UartHandle;
 
-
-static uint32_t get_risaf_max_addr(RISAF_TypeDef *risaf)
-{
-  uint32_t max_addr = 0U;
-  if      ((risaf == RISAF1_S)  || (risaf == RISAF1_NS))  {max_addr = RISAF1_LIMIT_ADDRESS_SPACE_SIZE;}
-  else if ((risaf == RISAF2_S)  || (risaf == RISAF2_NS))  {max_addr = RISAF2_LIMIT_ADDRESS_SPACE_SIZE;}
-  else if ((risaf == RISAF3_S)  || (risaf == RISAF3_NS))  {max_addr = RISAF3_LIMIT_ADDRESS_SPACE_SIZE;}
-  else if ((risaf == RISAF4_S)  || (risaf == RISAF4_NS))  {max_addr = RISAF4_LIMIT_ADDRESS_SPACE_SIZE;}
-  else if ((risaf == RISAF5_S)  || (risaf == RISAF5_NS))  {max_addr = RISAF5_LIMIT_ADDRESS_SPACE_SIZE;}
-  else if ((risaf == RISAF6_S)  || (risaf == RISAF6_NS))  {max_addr = RISAF6_LIMIT_ADDRESS_SPACE_SIZE;}
-  else if ((risaf == RISAF7_S)  || (risaf == RISAF7_NS))  {max_addr = RISAF7_LIMIT_ADDRESS_SPACE_SIZE;}
-  else if ((risaf == RISAF8_S)  || (risaf == RISAF8_NS))  {max_addr = RISAF8_LIMIT_ADDRESS_SPACE_SIZE;}
-  else if ((risaf == RISAF9_S)  || (risaf == RISAF9_NS))  {max_addr = RISAF9_LIMIT_ADDRESS_SPACE_SIZE;}
-  else if ((risaf == RISAF11_S) || (risaf == RISAF11_NS)) {max_addr = RISAF11_LIMIT_ADDRESS_SPACE_SIZE;}
-  else if ((risaf == RISAF12_S) || (risaf == RISAF12_NS)) {max_addr = RISAF12_LIMIT_ADDRESS_SPACE_SIZE;}
-  else if ((risaf == RISAF13_S) || (risaf == RISAF13_NS)) {max_addr = RISAF13_LIMIT_ADDRESS_SPACE_SIZE;}
-  else if ((risaf == RISAF14_S) || (risaf == RISAF14_NS)) {max_addr = RISAF14_LIMIT_ADDRESS_SPACE_SIZE;}
-  else if ((risaf == RISAF15_S) || (risaf == RISAF15_NS)) {max_addr = RISAF15_LIMIT_ADDRESS_SPACE_SIZE;}
-  else if ((risaf == RISAF21_S) || (risaf == RISAF21_NS)) {max_addr = RISAF21_LIMIT_ADDRESS_SPACE_SIZE;}
-  else if ((risaf == RISAF22_S) || (risaf == RISAF22_NS)) {max_addr = RISAF22_LIMIT_ADDRESS_SPACE_SIZE;}
-  else if ((risaf == RISAF23_S) || (risaf == RISAF23_NS)) {max_addr = RISAF23_LIMIT_ADDRESS_SPACE_SIZE;}
-  return max_addr;
-}
-
-static void set_risaf_default(RISAF_TypeDef *risaf)
-{
-  RISAF_BaseRegionConfig_t risaf_conf;  
-  risaf_conf.StartAddress = 0x0;
-  risaf_conf.EndAddress   = get_risaf_max_addr(risaf); /* as the default config */
-  risaf_conf.Filtering    = RISAF_FILTER_ENABLE; // Base region enable (otherwise access control is secure, privileged, trusted domain CID = 1)
-  risaf_conf.PrivWhitelist  = RIF_CID_NONE; // apps running in all compartments can access to region in priv/unpriv mode
-  risaf_conf.ReadWhitelist  = RIF_CID_MASK; // apps running in all compartments can R in this region
-  risaf_conf.WriteWhitelist = RIF_CID_MASK; // apps running in all compartments can W in this region
-  // Configure 2 regions with this config, fully overlapping, one for secure one for non secure accesses:
-  risaf_conf.Secure = RIF_ATTRIBUTE_SEC;    // Only secure requests can access this region
-  HAL_RIF_RISAF_ConfigBaseRegion(risaf, 0, &risaf_conf);
-  risaf_conf.Secure = RIF_ATTRIBUTE_NSEC;    // Only non-secure requests can access this region
-  HAL_RIF_RISAF_ConfigBaseRegion(risaf, 1, &risaf_conf);
-}
-
 #ifdef HAL_BSEC_MODULE_ENABLED
 static void fuse_hardware_conf(uint32_t bit_to_fuse)
 {
@@ -249,6 +209,7 @@ void NPU_Config(void)
   __HAL_RCC_AXISRAM6_MEM_CLK_ENABLE();
   __HAL_RCC_RAMCFG_CLK_ENABLE();
 
+#if 0
   // Enable Cache-AXI
   __HAL_RCC_CACHEAXI_CLK_ENABLE();
   __HAL_RCC_CACHEAXI_FORCE_RESET();
@@ -257,6 +218,17 @@ void NPU_Config(void)
   // __HAL_RCC_CACHEAXI_CLK_SLEEP_DISABLE();
   // __HAL_RCC_NPU_CLK_SLEEP_DISABLE();
   // __HAL_RCC_RAMCFG_CLK_SLEEP_DISABLE();
+#else
+  RAMCFG_HandleTypeDef hramcfg = {0};
+  hramcfg.Instance =  RAMCFG_SRAM3_AXI;
+  HAL_RAMCFG_EnableAXISRAM(&hramcfg);
+  hramcfg.Instance =  RAMCFG_SRAM4_AXI;
+  HAL_RAMCFG_EnableAXISRAM(&hramcfg);
+  hramcfg.Instance =  RAMCFG_SRAM5_AXI;
+  HAL_RAMCFG_EnableAXISRAM(&hramcfg);
+  hramcfg.Instance =  RAMCFG_SRAM6_AXI;
+  HAL_RAMCFG_EnableAXISRAM(&hramcfg);
+#endif
   npu_cache_init();
   
 #ifdef USE_NPU_CACHE
@@ -265,14 +237,17 @@ void NPU_Config(void)
    npu_cache_disable();
 #endif
 
+#if 0 // this is done in RISAF_Config
   RIMC_MasterConfig_t master_conf;
   /* Enable Secure access for NPU */
   master_conf.MasterCID = RIF_CID_1;    // Master CID = 1
   master_conf.SecPriv = RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV; // Priviledged secure
   HAL_RIF_RIMC_ConfigMasterAttributes(RIF_MASTER_INDEX_NPU, &master_conf);  
   HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_NPU, RIF_ATTRIBUTE_PRIV | RIF_ATTRIBUTE_SEC);
+#endif
 }
-#if 1
+
+
 void RISAF_Config(void)
 {
   __HAL_RCC_RIFSC_CLK_ENABLE();
@@ -295,39 +270,6 @@ void RISAF_Config(void)
   HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_OTG1HS , RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV);
   HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_SPI5 , RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV);
 }
-#else
-void RISAF_Config(void)
-{
-  /*
-  *  Note: before to set a risaf for a given IP, the IP
-  *        should be clocked.
-  */
-  set_risaf_default(RISAF2_S);          /* SRAM1_AXI */
-  set_risaf_default(RISAF3_S);          /* SRAM2_AXI */
-  
-  set_risaf_default(RISAF4_S);          /* NPU MST0 */
-  set_risaf_default(RISAF5_S);          /* NPU MST1 */
-  
-  set_risaf_default(RISAF6_S);          /* SRAM3,4,5,6_AXI */
-  set_risaf_default(RISAF7_S);          /* FLEXMEM */
-  
-#ifdef USE_NPU_CACHE
-  set_risaf_default(RISAF8_S);          /* NPU_CACHE */
-  set_risaf_default(RISAF15_S);         /* NPU_CACHE config */
-#endif  
-  
-  // set_risaf_default(RISAF9_S);       /* VENC */
-  
-#if defined(USE_EXTERNAL_MEMORY_DEVICES) && USE_EXTERNAL_MEMORY_DEVICES == 1
-#if (NUCLEO_N6_CONFIG == 0)
-  set_risaf_default(RISAF11_S);         /* OCTOSPI1 0x9000 0000 */
-#endif
-  set_risaf_default(RISAF12_S);         /* OCTOSPI2 0x7000 0000 */
-  // set_risaf_default(RISAF13_S);      /* OCTOSPI3 0x8000 0000 */
-#endif
-  
-}
-#endif
 
 void set_vector_table_addr(void)
 {

@@ -8,8 +8,8 @@ cd /d %~dp0
 set FLASH_FIRMWARE=firmware
 set FLASH_WEIGHTS=weights
 set FLASH_BOOTLOADER=bootloader
-set FLASHER = STM32_Programmer_CLI
-set EL = \\ExternalLoader\\MX66UW1G45G_STM32N6570-DK.stldr
+set FLASHER=STM32_Programmer_CLI
+set EL\\ExternalLoader\\MX25UM51245G_STM32N6570-NUCLEO.stldr
 
 set TARGET=%1
 

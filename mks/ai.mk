@@ -10,6 +10,7 @@ C_SOURCES_AI += $(AI_REL_DIR)/Npu/ll_aton/ll_aton_runtime.c
 C_SOURCES_AI += $(AI_REL_DIR)/Npu/ll_aton/ll_aton_util.c
 C_SOURCES_AI += $(AI_REL_DIR)/Npu/ll_aton/ll_sw_float.c
 C_SOURCES_AI += $(AI_REL_DIR)/Npu/ll_aton/ll_sw_integer.c
+C_SOURCES_AI += $(AI_REL_DIR)/Npu/ll_aton/ecloader.c
 C_SOURCES_AI += $(AI_REL_DIR)/Npu/Devices/STM32N6XX/npu_cache.c
 C_SOURCES_AI += $(AI_REL_DIR)/Npu/Devices/STM32N6XX/mcu_cache.c
 C_SOURCES_AI += $(PP_REL_DIR)/lib_objdetect_pp/Src/objdetect_pp.c

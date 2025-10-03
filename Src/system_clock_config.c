@@ -467,7 +467,7 @@ void SystemClock_Config_Nucleo(void)
   RCC_PeriphCLKInitTypeDef RCC_PeriphCLKInitStruct = {0};
 
   BSP_SMPS_Init(SMPS_VOLTAGE_OVERDRIVE);
-  //HAL_Delay(1); /* Assuming Voltage Ramp Speed of 1mV/us --> 100mV increase takes 100us */
+  HAL_Delay(1); /* Assuming Voltage Ramp Speed of 1mV/us --> 100mV increase takes 100us */
 
   // Oscillator config already done in bootrom
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_NONE;
