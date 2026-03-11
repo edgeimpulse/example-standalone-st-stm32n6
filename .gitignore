@@ -2,7 +2,8 @@
 /edgeimpulse/edge-impulse-sdk
 /edgeimpulse/tflite-model
 /edgeimpulse/model-parameters
-/Model/network.c
+/Model/*.c
+/Model/*.h
 /Model/network_data.hex
 
 

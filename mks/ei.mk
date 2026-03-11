@@ -16,6 +16,7 @@ CC_SOURCES = $(wildcard edgeimpulse/edge-impulse-sdk/tensorflow/lite/kernels/*.c
 CXX_INCLUDES += -Iedgeimpulse/edge-impulse-sdk/classifier
 CXX_INCLUDES += -Iedgeimpulse/edge-impulse-sdk/classifier/inference_engines
 CXX_INCLUDES += -Iedgeimpulse
+CXX_INCLUDES += -IModel
 CXX_INCLUDES += -IInc
 CXX_INCLUDES += -ILib
 CXX_INCLUDES += -ILib/AI_Runtime/Inc
@@ -28,6 +29,11 @@ CXX_INCLUDES += -ISTM32Cube_FW_N6/Drivers/STM32N6xx_HAL_Driver/Inc
 CXX_INCLUDES += -ISTM32Cube_FW_N6/Drivers/CMSIS/Device/ST/STM32N6xx/Include
 CXX_INCLUDES += -ISTM32Cube_FW_N6/Drivers/BSP/STM32N6570-DK
 CXX_INCLUDES += -ISTM32Cube_FW_N6/Drivers/BSP/Components/Common
+ifeq ($(call is_nucleo),1)
+CXX_INCLUDES += -ISTM32Cube_FW_N6/Drivers/BSP/STM32N6xx_Nucleo
+else
+CXX_INCLUDES += -ISTM32Cube_FW_N6/Drivers/BSP/STM32N6570-DK
+endif
 
 CXX_INCLUDES += -Iedgeimpulse/edge-impulse-sdk/CMSIS/Core/Include
 CXX_INCLUDES += -Iedgeimpulse/edge-impulse-sdk/CMSIS/DSP/Include
