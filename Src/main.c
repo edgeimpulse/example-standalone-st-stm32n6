@@ -113,31 +113,24 @@ __attribute__ ((section (".keep_me"))) void app_clean_invalidate_dbg()
 
 static void init_external_memories(void)
 {
-#if defined(USE_EXTERNAL_MEMORY_DEVICES) && USE_EXTERNAL_MEMORY_DEVICES == 1
   BSP_XSPI_NOR_Init_t Flash;
-  
+
 #if (NUCLEO_N6_CONFIG == 0)
   BSP_XSPI_RAM_Init(0);
-  BSP_XSPI_RAM_EnableMemoryMappedMode(0);  
+  BSP_XSPI_RAM_EnableMemoryMappedMode(0);
+  /* Configure the memory in octal DTR */
+  Flash.InterfaceMode = MX66UW1G45G_OPI_MODE;
+  Flash.TransferRate = MX66UW1G45G_DTR_TRANSFER;
+#else
+  Flash.InterfaceMode = MX25UM51245G_OPI_MODE;
+  Flash.TransferRate = MX25UM51245G_DTR_TRANSFER;
 #endif
-
-  Flash.InterfaceMode = BSP_XSPI_NOR_OPI_MODE;
-  Flash.TransferRate = BSP_XSPI_NOR_DTR_TRANSFER;
-
-  if (BSP_XSPI_NOR_Init(0, &Flash) != BSP_ERROR_NONE)
+  
+  if(BSP_XSPI_NOR_Init(0, &Flash) != BSP_ERROR_NONE)
   {
         __BKPT(0);
   }
-
-  //uint8_t id[3];
-  //BSP_XSPI_NOR_ReadID(0, id);
-
-  if (BSP_XSPI_NOR_EnableMemoryMappedMode(0) != BSP_ERROR_NONE)
-  {
-        __BKPT(0);
-  }
-
-#endif 
+  BSP_XSPI_NOR_EnableMemoryMappedMode(0);
 }
 
 #ifdef  USE_FULL_ASSERT

@@ -15,8 +15,8 @@ C_SOURCES_AI += $(AI_REL_DIR)/Npu/ll_aton/ll_aton_lib_sw_operators.c
 C_SOURCES_AI += $(AI_REL_DIR)/Npu/ll_aton/ll_aton_debug.c
 
 C_SOURCES_AI += $(AI_REL_DIR)/Npu/ll_aton/ecloader.c
-C_SOURCES_AI += $(AI_REL_DIR)/Npu/Devices/STM32N6XX/npu_cache.c
-C_SOURCES_AI += $(AI_REL_DIR)/Npu/Devices/STM32N6XX/mcu_cache.c
+C_SOURCES_AI += $(AI_REL_DIR)/Npu/Devices/STM32N6xx/npu_cache.c
+C_SOURCES_AI += $(AI_REL_DIR)/Npu/Devices/STM32N6xx/mcu_cache.c
 C_SOURCES_AI += $(PP_REL_DIR)/lib_objdetect_pp/Src/objdetect_pp.c
 C_SOURCES_AI += $(PP_REL_DIR)/lib_objdetect_pp/Src/objdetect_pp_yolov2.c
 C_SOURCES_AI += $(PP_REL_DIR)/lib_objdetect_pp/Src/objdetect_pp_yolov5.c
@@ -24,7 +24,7 @@ C_SOURCES_AI += $(PP_REL_DIR)/lib_objdetect_pp/Src/objdetect_pp_yolov8.c
 
 C_INCLUDES_AI += -I$(AI_REL_DIR)/Inc
 C_INCLUDES_AI += -I$(AI_REL_DIR)/Npu/ll_aton
-C_INCLUDES_AI += -I$(AI_REL_DIR)/Npu/Devices/STM32N6XX
+C_INCLUDES_AI += -I$(AI_REL_DIR)/Npu/Devices/STM32N6xx
 C_INCLUDES_AI += -I$(PP_REL_DIR)/lib_objdetect_pp/Inc
 
 C_DEFS_AI += -DLL_ATON_DUMP_DEBUG_API
