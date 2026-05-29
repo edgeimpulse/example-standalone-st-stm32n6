@@ -215,8 +215,7 @@ void NPU_Config(void)
   HAL_RAMCFG_EnableAXISRAM(&hramcfg);
   hramcfg.Instance =  RAMCFG_SRAM6_AXI;
   HAL_RAMCFG_EnableAXISRAM(&hramcfg);
-#endif
-  npu_cache_init();
+#endif  
   
 #ifdef USE_NPU_CACHE
    npu_cache_enable(); // Useless: already enabled by init

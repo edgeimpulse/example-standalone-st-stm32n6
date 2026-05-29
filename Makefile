@@ -54,6 +54,7 @@ C_SOURCES += Src/system_clock_config.c
 C_SOURCES += Src/sysmem.c
 C_SOURCES += Src/timer_config.c
 C_SOURCES += Model/network.c
+C_SOURCES += Model/stai_network.c
 
 # ASM sources
 ASM_SOURCES =

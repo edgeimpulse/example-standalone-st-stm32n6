@@ -5,7 +5,7 @@ CXX_SOURCES += $(wildcard edgeimpulse/tflite-model/*.cpp) \
 	$(wildcard edgeimpulse/edge-impulse-sdk/dsp/dct/*.cpp) \
 	$(wildcard edgeimpulse/edge-impulse-sdk/dsp/kissfft/*.cpp) \
 	$(wildcard edgeimpulse/edge-impulse-sdk/dsp/image/*.cpp )
-
+	
 CC_SOURCES = $(wildcard edgeimpulse/edge-impulse-sdk/tensorflow/lite/kernels/*.cc) \
 	$(wildcard edgeimpulse/edge-impulse-sdk/tensorflow/lite/kernels/internal/*.cc) \
 	$(wildcard edgeimpulse/edge-impulse-sdk/tensorflow/lite/micro/*.cc) \
@@ -16,11 +16,12 @@ CC_SOURCES = $(wildcard edgeimpulse/edge-impulse-sdk/tensorflow/lite/kernels/*.c
 CXX_INCLUDES += -Iedgeimpulse/edge-impulse-sdk/classifier
 CXX_INCLUDES += -Iedgeimpulse/edge-impulse-sdk/classifier/inference_engines
 CXX_INCLUDES += -Iedgeimpulse
+CXX_INCLUDES += -IModel
 CXX_INCLUDES += -IInc
 CXX_INCLUDES += -ILib
 CXX_INCLUDES += -ILib/AI_Runtime/Inc
 CXX_INCLUDES += -ILib/AI_Runtime/Npu/ll_aton
-CXX_INCLUDES += -ILib/AI_Runtime/Npu/Devices/STM32N6XX
+CXX_INCLUDES += -ILib/AI_Runtime/Npu/Devices/STM32N6xx
 CXX_INCLUDES += -ILib/Camera_Middleware
 CXX_INCLUDES += -ILib/Camera_Middleware/sensors
 CXX_INCLUDES += -ILib/Camera_Middleware/ISP_Library/isp/Inc
