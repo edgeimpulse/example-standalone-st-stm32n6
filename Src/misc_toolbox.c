@@ -188,54 +188,44 @@ void NPU_Config(void)
   __HAL_RCC_NPU_CLK_ENABLE();
   __HAL_RCC_NPU_FORCE_RESET();
   __HAL_RCC_NPU_RELEASE_RESET();
-
-  /* Enable NPU RAMs (4x448KB) */
-  __HAL_RCC_AXISRAM3_MEM_CLK_ENABLE();
-  __HAL_RCC_AXISRAM4_MEM_CLK_ENABLE();
-  __HAL_RCC_AXISRAM5_MEM_CLK_ENABLE();
-  __HAL_RCC_AXISRAM6_MEM_CLK_ENABLE();
-  __HAL_RCC_RAMCFG_CLK_ENABLE();
-
-#if 0
   // Enable Cache-AXI
   __HAL_RCC_CACHEAXI_CLK_ENABLE();
   __HAL_RCC_CACHEAXI_FORCE_RESET();
   __HAL_RCC_CACHEAXI_RELEASE_RESET();
-  
-  // __HAL_RCC_CACHEAXI_CLK_SLEEP_DISABLE();
-  // __HAL_RCC_NPU_CLK_SLEEP_DISABLE();
-  // __HAL_RCC_RAMCFG_CLK_SLEEP_DISABLE();
-#else
-  RAMCFG_HandleTypeDef hramcfg = {0};
-  hramcfg.Instance =  RAMCFG_SRAM3_AXI;
-  HAL_RAMCFG_EnableAXISRAM(&hramcfg);
-  hramcfg.Instance =  RAMCFG_SRAM4_AXI;
-  HAL_RAMCFG_EnableAXISRAM(&hramcfg);
-  hramcfg.Instance =  RAMCFG_SRAM5_AXI;
-  HAL_RAMCFG_EnableAXISRAM(&hramcfg);
-  hramcfg.Instance =  RAMCFG_SRAM6_AXI;
-  HAL_RAMCFG_EnableAXISRAM(&hramcfg);
-#endif  
+
+  //__HAL_RCC_AXISRAM3_MEM_CLK_ENABLE();
+  //__HAL_RCC_AXISRAM4_MEM_CLK_ENABLE();
+  //__HAL_RCC_AXISRAM5_MEM_CLK_ENABLE();
+  //__HAL_RCC_AXISRAM6_MEM_CLK_ENABLE();
+  //__HAL_RCC_RAMCFG_CLK_ENABLE();
   
 #ifdef USE_NPU_CACHE
    npu_cache_enable(); // Useless: already enabled by init
 #else
    npu_cache_disable();
 #endif
-
-#if 0 // this is done in RISAF_Config
   RIMC_MasterConfig_t master_conf;
   /* Enable Secure access for NPU */
   master_conf.MasterCID = RIF_CID_1;    // Master CID = 1
   master_conf.SecPriv = RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV; // Priviledged secure
   HAL_RIF_RIMC_ConfigMasterAttributes(RIF_MASTER_INDEX_NPU, &master_conf);  
   HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_NPU, RIF_ATTRIBUTE_PRIV | RIF_ATTRIBUTE_SEC);
-#endif
+
+  //RAMCFG_HandleTypeDef hramcfg = {0};
+  //hramcfg.Instance =  RAMCFG_SRAM3_AXI;
+  //HAL_RAMCFG_EnableAXISRAM(&hramcfg);
+  //hramcfg.Instance =  RAMCFG_SRAM4_AXI;
+  //HAL_RAMCFG_EnableAXISRAM(&hramcfg);
+  //hramcfg.Instance =  RAMCFG_SRAM5_AXI;
+  //HAL_RAMCFG_EnableAXISRAM(&hramcfg);
+  //hramcfg.Instance =  RAMCFG_SRAM6_AXI;
+  //HAL_RAMCFG_EnableAXISRAM(&hramcfg);
 }
 
 
 void RISAF_Config(void)
 {
+#if (NUCLEO_N6_CONFIG == 1)
   __HAL_RCC_RIFSC_CLK_ENABLE();
   RIMC_MasterConfig_t RIMC_master = {0};
   RIMC_master.MasterCID = RIF_CID_1;
@@ -255,6 +245,24 @@ void RISAF_Config(void)
   HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_LTDCL2 , RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV);
   HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_OTG1HS , RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV);
   HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_SPI5 , RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV);
+#else
+    __HAL_RCC_RIFSC_CLK_ENABLE();
+  RIMC_MasterConfig_t RIMC_master = {0};
+  RIMC_master.MasterCID = RIF_CID_1;
+  RIMC_master.SecPriv = RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV;
+  HAL_RIF_RIMC_ConfigMasterAttributes(RIF_MASTER_INDEX_NPU, &RIMC_master);
+  HAL_RIF_RIMC_ConfigMasterAttributes(RIF_MASTER_INDEX_DMA2D, &RIMC_master);
+  HAL_RIF_RIMC_ConfigMasterAttributes(RIF_MASTER_INDEX_DCMIPP, &RIMC_master);
+  HAL_RIF_RIMC_ConfigMasterAttributes(RIF_MASTER_INDEX_LTDC1 , &RIMC_master);
+  HAL_RIF_RIMC_ConfigMasterAttributes(RIF_MASTER_INDEX_LTDC2 , &RIMC_master);
+  HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_NPU , RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV);
+  HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_DMA2D , RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV);
+  HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_CSI    , RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV);
+  HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_DCMIPP , RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV);
+  HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_LTDC   , RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV);
+  HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_LTDCL1 , RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV);
+  HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_LTDCL2 , RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV);
+#endif
 }
 
 void set_vector_table_addr(void)
